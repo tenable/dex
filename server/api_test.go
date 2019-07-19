@@ -344,16 +344,6 @@ func TestConnector(t *testing.T) {
 	}
 
 	_, err = client.UpdateConnector(ctx, &api.Connector{
-		Id:   "some_id",
-		Name: "",
-	})
-	if err == nil {
-		t.Errorf("This should have errored out since this has invalid name")
-	}
-	if err.Error() != `rpc error: code = Unknown desc = Connector ID, Type, and Name are mandatory fields` {
-		t.Errorf("Unexpected error : %s", err.Error())
-	}
-	_, err = client.UpdateConnector(ctx, &api.Connector{
 		Id:     "some_id",
 		Config: []byte(`updated_config`),
 		Name:   "updated_name",
