@@ -5,7 +5,7 @@ export PATH := $(PWD)/bin:$(PATH)
 
 VERSION ?= $(shell ./scripts/git-version)
 
-DOCKER_REPO=quay.io/dexidp/dex
+DOCKER_REPO ?= quay.io/dexidp/dex
 DOCKER_IMAGE=$(DOCKER_REPO):$(VERSION)
 
 $( shell mkdir -p bin )
@@ -56,6 +56,9 @@ lint: bin/golint
 .PHONY: docker-image
 docker-image:
 	@sudo docker build -t $(DOCKER_IMAGE) .
+
+docker-image/mac:
+	@docker build -t $(DOCKER_IMAGE) .
 
 .PHONY: proto
 proto: bin/protoc bin/protoc-gen-go
