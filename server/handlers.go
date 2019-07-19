@@ -241,6 +241,10 @@ func (s *Server) handleAuthorization(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	if connector := r.URL.Query().Get("connector"); connector != "" {
+		http.Redirect(w, r, s.absPath("/auth", connector)+"?req="+authReq.ID, http.StatusFound)
+		return
+	}
 
 	connectorInfos := make([]connectorInfo, len(connectors))
 	i := 0
