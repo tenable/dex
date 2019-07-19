@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -112,10 +113,11 @@ func (d dexAPI) UpdateClient(ctx context.Context, req *api.UpdateClientReq) (*ap
 
 func (d dexAPI) CreateConnector(ctx context.Context, req *api.Connector) (*api.Connector, error) {
 	conn := storage.Connector{
-		ID:     req.GetId(),
-		Type:   req.GetType(),
-		Name:   req.GetName(),
-		Config: req.GetConfig(),
+		ID:              req.GetId(),
+		Type:            req.GetType(),
+		Name:            req.GetName(),
+		Config:          req.GetConfig(),
+		ResourceVersion: fmt.Sprintf("%d", time.Now().Unix()),
 	}
 	err := conn.Validate()
 	if err != nil {
@@ -148,6 +150,7 @@ func (d dexAPI) UpdateConnector(ctx context.Context, in *api.Connector) (*api.Co
 		if err != nil {
 			return c, err
 		}
+		c.ResourceVersion = fmt.Sprintf("%d", time.Now().Unix())
 		return c, nil
 	})
 	return in, err
