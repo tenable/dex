@@ -131,9 +131,15 @@ func (d dexAPI) CreateConnector(ctx context.Context, req *api.Connector) (*api.C
 
 func (d dexAPI) UpdateConnector(ctx context.Context, in *api.Connector) (*api.Connector, error) {
 	err := d.s.UpdateConnector(in.GetId(), func(c storage.Connector) (storage.Connector, error) {
-		c.Config = in.Config
-		c.Name = in.Name
-		c.Type = in.Type
+		if len(in.Config) != 0 {
+			c.Config = in.Config
+		}
+		if in.Name != "" {
+			c.Name = in.Name
+		}
+		if in.Type != "" {
+			c.Type = in.Type
+		}
 		err := c.Validate()
 		if err != nil {
 			return c, err
