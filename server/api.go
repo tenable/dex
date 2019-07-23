@@ -128,6 +128,23 @@ func (d dexAPI) CreateConnector(ctx context.Context, req *api.Connector) (*api.C
 	return req, err
 }
 
+func (d dexAPI) ListConnector(ctx context.Context, in *api.ListConnectorReq) (*api.ListConnectorResp, error) {
+	connectors, err := d.s.ListConnectors()
+	if err != nil {
+		return nil, err
+	}
+	ls := &api.ListConnectorResp{}
+	for i := range connectors {
+		ls.Connectors = append(ls.Connectors, &api.Connector{
+			Type:   connectors[i].Type,
+			Name:   connectors[i].Name,
+			Id:     connectors[i].ID,
+			Config: connectors[i].Config,
+		})
+	}
+	return ls, nil
+}
+
 func (d dexAPI) UpdateConnector(ctx context.Context, in *api.Connector) (*api.Connector, error) {
 	err := d.s.UpdateConnector(in.GetId(), func(c storage.Connector) (storage.Connector, error) {
 		if len(in.Config) != 0 {

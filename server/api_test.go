@@ -4,6 +4,7 @@ import (
 	"context"
 	"net"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 
@@ -379,8 +380,30 @@ func TestConnector(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unable to create connector: %s", err)
 	}
-	if c.Id != "some_id" {
-		t.Errorf("The id should have matched, got %s", c.Id)
+	ok := reflect.DeepEqual(*c, api.Connector{
+		Type:   "github",
+		Name:   "one_awesome_connector",
+		Id:     "some_id",
+		Config: []byte(`{}`),
+	})
+	if !ok {
+		t.Errorf("The connector should be the same as that we had persisted moments ago, but got %+v", c)
+	}
+	connectors, err := client.ListConnector(ctx, &api.ListConnectorReq{})
+	if err != nil {
+		t.Errorf("Unable to list connectors: %s", err)
+	}
+	if len(connectors.Connectors) != 1 {
+		t.Errorf("Expected to have one connector, but got %d", len(connectors.Connectors))
+	}
+	ok = reflect.DeepEqual(*connectors.Connectors[0], api.Connector{
+		Type:   "github",
+		Name:   "one_awesome_connector",
+		Id:     "some_id",
+		Config: []byte(`{}`),
+	})
+	if !ok {
+		t.Errorf("The connector should be the same as that we had persisted moments ago, but got %+v", *connectors.Connectors[0])
 	}
 	_, err = client.UpdateConnector(ctx, &api.Connector{
 		Id: "invalid_id",
@@ -435,6 +458,14 @@ func TestConnector(t *testing.T) {
 	})
 	if err != nil {
 		t.Errorf("Unable to delete connector: %s", err)
+	}
+
+	connectors, err = client.ListConnector(ctx, &api.ListConnectorReq{})
+	if err != nil {
+		t.Errorf("Unable to list connectors: %s", err)
+	}
+	if len(connectors.Connectors) != 0 {
+		t.Errorf("All the connectors should be deleted by now, but got %d", len(connectors.Connectors))
 	}
 }
 func TestUpdateClient(t *testing.T) {

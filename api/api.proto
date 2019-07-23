@@ -23,6 +23,14 @@ message Connector {
   bytes config = 4;
 }
 
+// ListRefreshResp returns a list of refresh tokens for a user.
+message ListConnectorResp {
+  repeated Connector connectors = 1;
+}
+
+// ListConnectorReq is a request to enumerate connectors.
+message ListConnectorReq {}
+
 // DeleteConnectorReq is a request to delete a connector with the given ID.
 message DeleteConnectorReq {
   string id = 1;
@@ -207,4 +215,6 @@ service Dex {
   rpc UpdateConnector(Connector) returns (Connector) {};
   // DeleteConnector deletes the corresponding connector
   rpc DeleteConnector(DeleteConnectorReq) returns (DeleteConnectorResp) {};
+  // ListConnector lists the available connectors
+  rpc ListConnector(ListConnectorReq) returns (ListConnectorResp) {};
 }
